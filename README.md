@@ -282,4 +282,9 @@ Run 'docker COMMAND --help' for more information on a command.
 
 ## Practica 4 - Desplegando aplicación con Docker Compose
 
-# Herramientas de estudio
+# Para seguir estudiando...
+1. [Curso de Docker](https://www.youtube.com/watch?v=UZpyvK6UGFo&list=PLqRCtm0kbeHAep1hc7yW-EZQoAJqSTgD-)
+1. [Katacoda - Learn Docker, Container Runtimes, Builders and Registries using Interactive Browser-Based Scenarios](https://www.katacoda.com/courses/container-runtimes)
+1. [Docker 101 Tutorial](https://www.docker.com/101-tutorial)
+1. [Docker for beginners](https://docker-curriculum.com/)
+1. [Aprendiendo a utilizar Docker Compose](https://dockertips.com/utilizando-docker-compose)
