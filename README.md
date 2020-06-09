@@ -414,16 +414,130 @@ Status: Downloaded newer image for negro2k2/webserver-image:v1
 
 ###  **Tarea**:  Hacer una modificación en la pagina web y desplegar la actualización con una nueva versión
 
-## Practica 3 - Desplegando aplicación con Docker Compose
+## Practica 3 - Desplegando aplicación con Docker Compose. _Basado en **[Como levantar un servicio web con docker y docker-compose](https://blog.dinahosting.com/servicio-web-con-docker-y-docker-compose/)**_
+Con docker, se suele empaquetar un solo servicio por contenedor, pero, cuando la solución a desplegar necesita mas de un contenedor, se necesita un orquestador, es decir, una herramienta que permita manejar en conjunto varios contenedores relacionados entre sí. Para este fin, se usa **Docker Compose**.
+
+Para poder levantar los servicios que son necesarios, hay que indicarle a Docker Compose lo siguiente:
+* Los contenedores a crear/levantar
+* La relación de los contenedores entre sí
+
+Para ello creamos un fichero **YAML**, llamado _**docker-compose.yml**_, donde se define cada uno de los servicios
+
+```yaml
+version: "3"
+ 
+services:
+  miservicio_mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_DATABASE=nombre
+      - MYSQL_ROOT_PASSWORD=claveroot
+      - MYSQL_USER=miusuario
+      - MYSQL_PASSWORD=mipassword
+    volumes:
+      # Montamos un volumen para MySQL para no perder los datos de bd
+      - ./mysql:/var/lib/mysql
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+   
+  miservicio_php:
+    image: php:7-apache
+    volumes:
+      # Montamos nuestra web desde fuera en el directorio web del contenedor
+      - ./web:/var/www/html
+    expose:
+      - 80
+    ports:
+      - 80:80
+    links: 
+      - miservicio_mysql
+```
+
+Iniciar el despliegue los contenedores
 ```terminal
+> docker-compose up -d
+
+Creating network "practica3_default" with the default driver
+Pulling miservicio_mysql (mysql:5.7)...
+5.7: Pulling from library/mysql
+8559a31e96f4: Pull complete
+d51ce1c2e575: Pull complete
+c2344adc4858: Pull complete
+fcf3ceff18fc: Pull complete
+16da0c38dc5b: Pull complete
+b905d1797e97: Pull complete
+4b50d1c6b05c: Pull complete
+d85174a87144: Pull complete
+a4ad33703fa8: Pull complete
+f7a5433ce20d: Pull complete
+3dcd2a278b4a: Pull complete
+Digest: sha256:32f9d9a069f7a735e28fd44ea944d53c61f990ba71460c5c183e610854ca4854
+Status: Downloaded newer image for mysql:5.7
+Pulling miservicio_php (php:7-apache)...
+7-apache: Pulling from library/php
+8559a31e96f4: Already exists
+e0276193a084: Pull complete
+eb2d00c10344: Pull complete
+f54006e0dc29: Pull complete
+e0d3d1244592: Pull complete
+3a60f364b0c5: Pull complete
+3e309988c00b: Pull complete
+5d92b4c08548: Pull complete
+83faa9e6981c: Pull complete
+8f4f490c1749: Pull complete
+e75eda9c13c2: Pull complete
+af5ca20c6fe0: Pull complete
+ecf22074a2a4: Pull complete
+Digest: sha256:8b741fab33229187b2bc161b2176ba07997664d00a778c0a7df59514440f0acc
+Status: Downloaded newer image for php:7-apache
+Creating practica3_miservicio_mysql_1 ... done
+Creating practica3_miservicio_php_1   ... done
 ```
+
+Verificar el estado de los contenedores del proyecto actual
+```terminal
+> docker-compose ps -a
+
+            Name                          Command               State                 Ports
+---------------------------------------------------------------------------------------------------------
+practica3_miservicio_mysql_1   docker-entrypoint.sh mysqld      Up      0.0.0.0:3306->3306/tcp, 33060/tcp
+practica3_miservicio_php_1     docker-php-entrypoint apac ...   Up      0.0.0.0:80->80/tcp
 ```
+
+Parar los contenedores en ejecucion
+```terminal
+> docker-compose stop
+
+Stopping practica3_miservicio_php_1   ... done
+Stopping practica3_miservicio_mysql_1 ... done
+```
+
+Eliminar los contenedores desplegados por esta aplicación
+```terminal
+> docker-compose down
+
+Removing practica3_miservicio_php_1   ... done
+Removing practica3_miservicio_mysql_1 ... done
+Removing network practica3_default
 ```
 
 
 # Para seguir estudiando...
-1. [Curso de Docker](https://www.youtube.com/watch?v=UZpyvK6UGFo&list=PLqRCtm0kbeHAep1hc7yW-EZQoAJqSTgD-)
+
+## docker
+1. [Curso de Docker](https://www.youtube.com/watch?v=UZpyvK6UGFo&list=PLqRCtm0kbeHAep1hc7yW-EZQoAJqSTgD-) (Youtube)
+1. [Play with Docker Classroom](https://training.play-with-docker.com/) (Recomendado)
 1. [Katacoda - Learn Docker, Container Runtimes, Builders and Registries using Interactive Browser-Based Scenarios](https://www.katacoda.com/courses/container-runtimes)
 1. [Docker 101 Tutorial](https://www.docker.com/101-tutorial)
 1. [Docker for beginners](https://docker-curriculum.com/)
+1. [Linea de comandos - docker](https://docs.docker.com/engine/reference/commandline/cli/)
+1. [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+
+
+## docker-compose
 1. [Aprendiendo a utilizar Docker Compose](https://dockertips.com/utilizando-docker-compose)
+1. [Ejecutar aplicaciones multi-contenedor con docker-compose](https://www.returngis.net/2019/02/ejecutar-aplicaciones-multi-contenedor-con-docker-compose/) (Recomendado)
+1. [Linea de comandos - docker-compose](https://docs.docker.com/compose/reference/overview/)
+1. [Compose file reference](https://docs.docker.com/compose/compose-file/)
