@@ -277,10 +277,149 @@ Run 'docker COMMAND --help' for more information on a command.
 ```
 
 ## Practica 2 - Creando imagen basico
+En esta practica vamos a crear una miniaplicacion web y publicada automaticamente en un contenedor
+### 1) Crear el archivo **index.html**
+```html
+<h1>Hello World</h1>
+```
 
-## Practica 3 - Publicando imagen en Docker Hub
+### 2) Crear el archivo **Dockerfile**
+```Dockerfile
+FROM nginx:alpine
+COPY . /usr/share/nginx/html
+```
 
-## Practica 4 - Desplegando aplicación con Docker Compose
+###  3) Construir la imagen del proyecto
+Construir la imagen de nuestra aplicación. Utilizar como agrupador el nombre de usuario que se utilizó en el registro en [Docker Hub](https://hub.docker.com/signup), en mi caso es **negro2k2**
+```terminal
+docker build -t negro2k2/webserver-image:v1 .
+```
+```
+Sending build context to Docker daemon  3.072kB
+Step 1/2 : FROM nginx:alpine
+ ---> 29b49a39bc47
+Step 2/2 : COPY . /usr/share/nginx/html
+ ---> b01197432c36
+Successfully built b01197432c36
+Successfully tagged negro2k2/webserver-image:v1
+SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
+```
+
+Consultar las imagenes que se encuentran en nuestro sistema (descargadas y construidas)
+```terminal
+docker images
+```
+```
+
+REPOSITORY                  TAG                 IMAGE ID            CREATED              SIZE
+negro2k2/webserver-image    v1                  b01197432c36        About a minute ago   21.2MB
+nginx                       alpine              7d0cdcc60a96        6 days ago           21.2MB
+redis                       latest              4760dc956b2d        2 years ago          107MB
+ubuntu                      latest              f975c5035748        2 years ago          112MB
+alpine                      latest              3fd9065eaf02        2 years ago          4.14MB
+```
+
+Ejecutar el contenedor a partir de la imagen construida
+```terminal
+docker run -d -p 80:80 negro2k2/webserver-image:v1
+```
+```
+f5240daeea6695fc9a33c414d973498c85a309360b45a65c25f908a3da5ffa8b
+```
+
+Ahora podemos probar que la aplicacion ha sido desplegada navegando al [host local](http://localhost)
+
+### 4) Publicando imagen en Docker Hub. _Basado en [Docker Hub Quickstart](https://docs.docker.com/docker-hub/)_
+
+1. Inicia sesión en [Docker Hub](https://hub.docker.com/signup)
+
+2. Crear un **repositorio** en Docker Hub con el nombre `webserver-image`
+
+3. Construir/actualizar (si es necesario) la imagen en su computador: `docker run -d -p 80:80 negro2k2/webserver-image:v1`
+
+4. Publicar la imagen en Docker Hub: `docker push negro2k2/webserver-image:v1`
+```
+The push refers to repository [docker.io/negro2k2/webserver-image]
+48285129616d: Pushed
+debb5485a52f: Mounted from negro2k2/docker101tutorial
+beee9f30bc1f: Mounted from negro2k2/docker101tutorial
+v1: digest: sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b8c5 size: 946
+```
+
+### 5) Eliminar la imagen local
+
+#### a. Eliminación exitosa
+```terminal
+> docker rmi b01197432c36
+Untagged: negro2k2/webserver-image:v1
+Untagged: negro2k2/webserver-image@sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b8c5
+Deleted: sha256:b01197432c367f9039180d463365081b3a0ef7d6c54319744e9b94cf4bf4d9e2
+Deleted: sha256:28ef4c066a326e9ff2460b58bbfb6c598573ab473315d05ad7b71c8b41b32e64
+```
+
+#### b. Eliminación no exitosa
+En el caso que aun se encuentre en ejecución el contenedor o esté dentro de la lista de contenedores creados, la imagen no se deja eliminar, entonces:
+
+```terminal
+> docker rmi b01197432c36
+Error response from daemon: conflict: unable to delete b01197432c36 (cannot be forced) - image is being used by running container e1a52d1ec6b0
+
+> docker ps -a
+CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS                      PORTS                NAMES
+e1a52d1ec6b0        negro2k2/webserver-image:v1   "nginx -g 'daemon of…"   22 seconds ago      Up 17 seconds               0.0.0.0:80->80/tcp   busy_kepler
+0090b434372f        negro2k2/webserver-image:v1   "nginx -g 'daemon of…"   22 minutes ago      Exited (0) 34 seconds ago                        admiring_banach
+7c6a5cce22f0        nginx                         "/docker-entrypoint.…"   9 hours ago         Exited (0) 8 hours ago                           web
+```
+
+1. Es necesario parar el contenedor, eliminar los contenedores creados de dicha imagen 
+```terminal
+> docker stop busy_kepler
+busy_kepler
+
+> docker rm busy_kepler
+busy_kepler
+
+> docker rm admiring_banach
+admiring_banach
+
+> docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                   PORTS               NAMES
+7c6a5cce22f0        nginx               "/docker-entrypoint.…"   9 hours ago         Exited (0) 8 hours ago                       web
+```
+
+2. Eliminar la imagen
+```terminal
+> docker rmi b01197432c36
+Untagged: negro2k2/webserver-image:v1
+Untagged: negro2k2/webserver-image@sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b8c5
+Deleted: sha256:b01197432c367f9039180d463365081b3a0ef7d6c54319744e9b94cf4bf4d9e2
+Deleted: sha256:28ef4c066a326e9ff2460b58bbfb6c598573ab473315d05ad7b71c8b41b32e64
+```
+
+### 6) Ahora puedes descargar a tu computador (o en cualquier otro Docker host) su aplicacion publicada
+
+```terminal
+docker run -d -p 80:80 negro2k2/webserver-image:v1
+```
+```
+Unable to find image 'negro2k2/webserver-image:v1' locally
+v1: Pulling from negro2k2/webserver-image
+aad63a933944: Already exists
+b14da7a62044: Already exists
+4fcc19494f67: Pull complete
+Digest: sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b8c5
+Status: Downloaded newer image for negro2k2/webserver-image:v1
+0090b434372f2910e32efe3e9e9cb50922f615238df469fc2795686c2581cfd0
+```
+
+###  **Tarea**:  Hacer una modificación en la pagina web y desplegar la actualización con una nueva versión
+
+## Practica 3 - Desplegando aplicación con Docker Compose
+```terminal
+```
+```
+```
+
 
 # Para seguir estudiando...
 1. [Curso de Docker](https://www.youtube.com/watch?v=UZpyvK6UGFo&list=PLqRCtm0kbeHAep1hc7yW-EZQoAJqSTgD-)
