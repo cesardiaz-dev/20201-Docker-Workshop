@@ -3,10 +3,9 @@
 ## Practica 1 - Comandos Docker
 
 ### 1) Consultar la version de docker
-```terminal
-docker version
-```
-```
+```bash
+> docker version
+
 Client: Docker Engine - Community
  Version:           19.03.8
  API version:       1.40
@@ -40,10 +39,9 @@ Server: Docker Engine - Community
 ```
 
 ### 2) Ejecutar el contenedor "Hola Mundo!"
-```terminal
-docker run hello-world
-```
-```
+```bash
+> docker run hello-world
+
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
 
@@ -54,7 +52,7 @@ To generate this message, Docker took the following steps:
  3. The Docker daemon created a new container from that image which runs the
     executable that produces the output you are currently reading.
  4. The Docker daemon streamed that output to the Docker client, which sent it
-    to your terminal.
+    to your bash.
 
 To try something more ambitious, you can run an Ubuntu container with:
  $ docker run -it ubuntu bash
@@ -67,19 +65,17 @@ For more examples and ideas, visit:
 ```
 
 ### 3) Consultar los contenedores en ejecucion
-```terminal
-docker ps
-```
-```
+```bash
+> docker ps
+ 
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 ```
 En este caso, no hay contenedores en ejecucion.
 
 Para ver los contenedores, incluyendo los que ya se no se están ejecutando
-```terminal
-docker ps -a
-```
-```
+```bash
+> docker ps -a
+
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                       PORTS                NAMES
 c2b02987dc5a        hello-world         "/hello"            About a minute ago   Exited (0) About a minute ago                       mystifying_panini
 ```
@@ -88,18 +84,16 @@ c2b02987dc5a        hello-world         "/hello"            About a minute ago  
 Es necesario ID de Contenedor (CONTAINER ID) o el nombre del contenedor (NAMES) para poder seleccionarlo y eliminarlo de la lista.
 
 Para eliminarlo por **CONTAINER ID**:
-```terminal
-docker rm c2b02987dc5a
-```
-```
+```bash
+> docker rm c2b02987dc5a
+
 c2b02987dc5a
 ```
 
 Para eliminarlo por **NAMES**:
-```terminal
-docker rm mystifying_panini
-```
-```
+```bash
+> docker rm mystifying_panini
+
 mystifying_panini
 ```
 
@@ -110,10 +104,9 @@ Aqui usaremos de nuevo el comando **run** pero con unos nuevos ajustes:
 * `-d`: Ejecuta el contenedor en segundo plano (demonio)
 * `--name`: Asigna el nombre del contenedor.
 * `-p`: realiza un mapeo entre el puerto del contenedor al puerto en el host. 
-```terminal
-docker run -d --name web -p 80:80 nginx
-```
-```
+```bash
+> docker run -d --name web -p 80:80 nginx
+
 Unable to find image 'nginx:latest' locally
 latest: Pulling from library/nginx
 afb6ec6fdc1c: Pull complete
@@ -126,22 +119,19 @@ Status: Downloaded newer image for nginx:latest
 8c1d70cdf9f2e6a1f93073734189de86ae2eb722f2965b3e88935352d1c40bd7
 ```
 
-```terminal
-docker ps
-```
-```
+```bash
+> docker ps
+
 CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                NAMES
 8c1d70cdf9f2        nginx               "/docker-entrypoint.…"   About a minute ago   Up About a minute   0.0.0.0:80->80/tcp   web
 ```
 
 ### 6) Ingresar al shell del sistema operativo
-```terminal
-docker exec -it web /bin/bash
-```
-```terminal
+```bash
+> docker exec -it web /bin/bash
+
 root@8c1d70cdf9f2:/# ls -l /
-```
-```
+
 total 80
 drwxr-xr-x   2 root root 4096 May 14 14:50 bin
 drwxr-xr-x   2 root root 4096 May  2 16:39 boot
@@ -164,31 +154,27 @@ dr-xr-xr-x  12 root root    0 Jun  9 06:21 sys
 drwxrwxrwt   1 root root 4096 Jun  2 00:35 tmp
 drwxr-xr-x   1 root root 4096 May 14 14:50 usr
 drwxr-xr-x   1 root root 4096 May 14 14:50 var
-```
-```terminal
+
 root@8c1d70cdf9f2:/# exit
+
+>
 ```
 
 ### 7) Parar un contenedor permanente
-```terminal
-docker stop 8c1d70cdf9f2
-```
-```
-8c1d70cdf9f2
-```
+```bash
+> docker stop 8c1d70cdf9f2
 
-```terminal
-docker stop web
-```
-```
+8c1d70cdf9f2
+
+> docker stop web
+
 web
 ```
 
 ### 8) Obtener ayuda de los comandos de docker
-```terminal
-docker help
-```
-```
+```bash
+> docker help
+
 Usage:  docker [OPTIONS] COMMAND
 
 A self-sufficient runtime for containers
@@ -291,10 +277,9 @@ COPY . /usr/share/nginx/html
 
 ###  3) Construir la imagen del proyecto
 Construir la imagen de nuestra aplicación. Utilizar como agrupador el nombre de usuario que se utilizó en el registro en [Docker Hub](https://hub.docker.com/signup), en mi caso es **negro2k2**
-```terminal
-docker build -t negro2k2/webserver-image:v1 .
-```
-```
+```bash
+> docker build -t negro2k2/webserver-image:v1 .
+
 Sending build context to Docker daemon  3.072kB
 Step 1/2 : FROM nginx:alpine
  ---> 29b49a39bc47
@@ -306,10 +291,8 @@ SECURITY WARNING: You are building a Docker image from Windows against a non-Win
 ```
 
 Consultar las imagenes que se encuentran en nuestro sistema (descargadas y construidas)
-```terminal
-docker images
-```
-```
+```bash
+> docker images
 
 REPOSITORY                  TAG                 IMAGE ID            CREATED              SIZE
 negro2k2/webserver-image    v1                  b01197432c36        About a minute ago   21.2MB
@@ -320,10 +303,9 @@ alpine                      latest              3fd9065eaf02        2 years ago 
 ```
 
 Ejecutar el contenedor a partir de la imagen construida
-```terminal
-docker run -d -p 80:80 negro2k2/webserver-image:v1
-```
-```
+```bash
+> docker run -d -p 80:80 negro2k2/webserver-image:v1
+
 f5240daeea6695fc9a33c414d973498c85a309360b45a65c25f908a3da5ffa8b
 ```
 
@@ -349,8 +331,9 @@ v1: digest: sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b
 ### 5) Eliminar la imagen local
 
 #### a. Eliminación exitosa
-```terminal
+```bash
 > docker rmi b01197432c36
+
 Untagged: negro2k2/webserver-image:v1
 Untagged: negro2k2/webserver-image@sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b8c5
 Deleted: sha256:b01197432c367f9039180d463365081b3a0ef7d6c54319744e9b94cf4bf4d9e2
@@ -360,7 +343,7 @@ Deleted: sha256:28ef4c066a326e9ff2460b58bbfb6c598573ab473315d05ad7b71c8b41b32e64
 #### b. Eliminación no exitosa
 En el caso que aun se encuentre en ejecución el contenedor o esté dentro de la lista de contenedores creados, la imagen no se deja eliminar, entonces:
 
-```terminal
+```bash
 > docker rmi b01197432c36
 Error response from daemon: conflict: unable to delete b01197432c36 (cannot be forced) - image is being used by running container e1a52d1ec6b0
 
@@ -372,7 +355,7 @@ e1a52d1ec6b0        negro2k2/webserver-image:v1   "nginx -g 'daemon of…"   22 
 ```
 
 1. Es necesario parar el contenedor, eliminar los contenedores creados de dicha imagen 
-```terminal
+```bash
 > docker stop busy_kepler
 busy_kepler
 
@@ -388,7 +371,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 ```
 
 2. Eliminar la imagen
-```terminal
+```bash
 > docker rmi b01197432c36
 Untagged: negro2k2/webserver-image:v1
 Untagged: negro2k2/webserver-image@sha256:708b57b45928e69b582c2048e19b950b4d3b7dd86db4bc520b29f94fea69b8c5
@@ -398,10 +381,9 @@ Deleted: sha256:28ef4c066a326e9ff2460b58bbfb6c598573ab473315d05ad7b71c8b41b32e64
 
 ### 6) Ahora puedes descargar a tu computador (o en cualquier otro Docker host) su aplicacion publicada
 
-```terminal
-docker run -d -p 80:80 negro2k2/webserver-image:v1
-```
-```
+```bash
+> docker run -d -p 80:80 negro2k2/webserver-image:v1
+
 Unable to find image 'negro2k2/webserver-image:v1' locally
 v1: Pulling from negro2k2/webserver-image
 aad63a933944: Already exists
@@ -455,8 +437,8 @@ services:
       - miservicio_mysql
 ```
 
-Iniciar el despliegue los contenedores
-```terminal
+1. Iniciar el despliegue los contenedores
+```bash
 > docker-compose up -d
 
 Creating network "practica3_default" with the default driver
@@ -496,8 +478,8 @@ Creating practica3_miservicio_mysql_1 ... done
 Creating practica3_miservicio_php_1   ... done
 ```
 
-Verificar el estado de los contenedores del proyecto actual
-```terminal
+2. Verificar el estado de los contenedores del proyecto actual
+```bash
 > docker-compose ps -a
 
             Name                          Command               State                 Ports
@@ -506,23 +488,22 @@ practica3_miservicio_mysql_1   docker-entrypoint.sh mysqld      Up      0.0.0.0:
 practica3_miservicio_php_1     docker-php-entrypoint apac ...   Up      0.0.0.0:80->80/tcp
 ```
 
-Parar los contenedores en ejecucion
-```terminal
+3. Parar los contenedores en ejecucion
+```bash
 > docker-compose stop
 
 Stopping practica3_miservicio_php_1   ... done
 Stopping practica3_miservicio_mysql_1 ... done
 ```
 
-Eliminar los contenedores desplegados por esta aplicación
-```terminal
+4. Eliminar los contenedores desplegados por esta aplicación
+```bash
 > docker-compose down
 
 Removing practica3_miservicio_php_1   ... done
 Removing practica3_miservicio_mysql_1 ... done
 Removing network practica3_default
 ```
-
 
 # Para seguir estudiando...
 
