@@ -317,9 +317,11 @@ Ahora podemos probar que la aplicacion ha sido desplegada navegando al [host loc
 
 2. Crear un **repositorio** en Docker Hub con el nombre `webserver-image`
 
-3. Construir/actualizar (si es necesario) la imagen en su computador: `docker run -d -p 80:80 negro2k2/webserver-image:v1`
+3. Construir(si es necesario) la imagen en su computador: `docker build -t negro2k2/webserver-image:v1  .`
 
-4. Publicar la imagen en Docker Hub: `docker push negro2k2/webserver-image:v1`
+4. Iniciar sesión (si no lo ha echo anteriormente) en docker por la consola con `docker login`
+
+5. Publicar la imagen en Docker Hub: `docker push negro2k2/webserver-image:v1`
 ```
 The push refers to repository [docker.io/negro2k2/webserver-image]
 48285129616d: Pushed
